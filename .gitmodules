@@ -1,0 +1,3 @@
+[submodule "pyperformance"]
+	path = pyperformance
+	url = https://github.com/python/pyperformance.git
