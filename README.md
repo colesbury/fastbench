@@ -34,4 +34,3 @@ Install the dependencies. If Python is executed from the source directory, then 
 * django_template, json, pycparser, pylint, thrift - Pyston benchmarks not yet enabled
 * sphinx - benchmark messes with `__builtins__`
 * python_startup - requires separate process
-* 
