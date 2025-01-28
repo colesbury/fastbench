@@ -27,3 +27,11 @@ Install the dependencies. If Python is executed from the source directory, then 
 
 * Python compiles `.pyc` files for packages only when they are being installed. If the `PYC_MAGIC_NUMBER` changes, then Python will recompile the bytecode while the benchmark is running, potentially distorting results. It will not update the `.pyc` files for packages in `site-packages`, only local `__pycache__` directories.
 * Fixing the `PYTHONHASHSEED` reduces variation but may be inapprorpriate for commits that substantially modify dictionary representation.
+
+### Disabled benchmarks
+
+* connected_components, shortest_path - networkx doesn't work with free threaded Python
+* django_template, json, pycparser, pylint, thrift - Pyston benchmarks not yet enabled
+* sphinx - benchmark messes with `__builtins__`
+* python_startup - requires separate process
+* 
