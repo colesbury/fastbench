@@ -507,7 +507,6 @@ def run_one_benchmark(name, scale):
         return func(loops, *args)
     elif kind == "async":
         import asyncio
-        assert loops == 1
         mod = import_benchmark(module_name)
         if isinstance(func_name, str):
             func = getattr(mod, func_name)
