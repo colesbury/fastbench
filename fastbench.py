@@ -13,8 +13,10 @@ EXCLUDED = {
 def ADD_PATH(path):
     sys.path.append(os.path.join(os.path.dirname(__file__), path))
 
-ADD_PATH("pyperformance/benchmarks")
-ADD_PATH("pyperformance/benchmarks/bm_2to3/vendor/src")
+BENCHMARKS = os.path.join(os.path.dirname(__file__), 'pyperformance', 'pyperformance', 'data-files', 'benchmarks')
+
+ADD_PATH(BENCHMARKS)
+ADD_PATH(os.path.join(BENCHMARKS, 'bm_2to3', 'vendor', 'src'))
 
 # Disable some logging
 import logging
@@ -25,7 +27,7 @@ def run_2to3(loops):
     import glob
     import lib2to3.main
 
-    datadir = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_2to3', 'data', '2to3')
+    datadir = os.path.join(BENCHMARKS, 'bm_2to3', 'data', '2to3')
     pyfiles = glob.glob(os.path.join(datadir, '*.py.txt'))
 
 
@@ -43,7 +45,7 @@ def run_2to3(loops):
 def run_bpe_tokeniser(loops):
     # Shorten the data file to speed up the benchmark
     import bm_bpe_tokeniser.run_benchmark as bm_bpe_tokeniser
-    DATA = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_bpe_tokeniser', 'data', 'frankenstein_intro.txt')
+    DATA = os.path.join(BENCHMARKS, 'bm_bpe_tokeniser', 'data', 'frankenstein_intro.txt')
     with open(DATA, "r", encoding="utf8") as f:
         data = f.read()
 
@@ -112,7 +114,7 @@ def bench_sympy(loops, func_name):
 def bench_tomli_loads(loops):
     # Shrink data file to speed up the benchmark
     import tomli
-    DATA_FILE = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_tomli_loads', 'data', 'tomli-bench-data.toml')
+    DATA_FILE = os.path.join(BENCHMARKS, 'bm_tomli_loads', 'data', 'tomli-bench-data.toml')
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         data = f.read(1682421)
 
@@ -229,7 +231,7 @@ def bench_docutils(loops):
 
     file_contents = []
     for filename in filenames:
-        path = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_docutils', 'data', 'docs', filename)
+        path = os.path.join(BENCHMARKS, 'bm_docutils', 'data', 'docs', filename)
         with open(path, "r", encoding="utf-8") as f:
             file_contents.append(f.read())
 
@@ -251,7 +253,7 @@ def bench_docutils(loops):
 def dulwich_get_repo():
     import bm_dulwich_log.run_benchmark as bm_dulwich_log
     import dulwich.repo
-    repo_path = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_dulwich_log', 'data', 'asyncio.git')
+    repo_path = os.path.join(BENCHMARKS, 'bm_dulwich_log', 'data', 'asyncio.git')
     repo = dulwich.repo.Repo(repo_path)
     head = repo.head()
     bm_dulwich_log.head = head  # oof
@@ -266,7 +268,7 @@ def genshi_xml_args():
     return bm_genshi.MarkupTemplate, bm_genshi.BIGTABLE_XML
 
 def html5lib_args():
-    filename = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_html5lib', 'data', 'w3_tr_html5.html')
+    filename = os.path.join(BENCHMARKS, 'bm_html5lib', 'data', 'w3_tr_html5.html')
     with open(filename, "rb") as fp:
         return io.BytesIO(fp.read())
 
@@ -334,7 +336,7 @@ def etree_args(func_name):
     return get_args
 
 def pyflate_args():
-    filename = os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_pyflate', 'data', 'interpreter.tar.bz2')
+    filename = os.path.join(BENCHMARKS, 'bm_pyflate', 'data', 'interpreter.tar.bz2')
     return filename
 
 def regex_compile_args():
@@ -448,7 +450,7 @@ ALL_BENCHMARKS = {
     "sympy_integrate": ("bm_sympy", "bench_sympy", "custom", 4, ("bench_integrate",)),
     "sympy_str": ("bm_sympy", "bench_sympy", "custom", 1, ("bench_str",)),
     "sympy_sum": ("bm_sympy", "bench_sympy", "custom", 1, ("bench_sum",)),
-    "telco": ("bm_telco", "bench_telco", "time_func", 8, os.path.join(os.path.dirname(__file__), 'pyperformance', 'benchmarks', 'bm_telco', 'data', 'telco-bench.b')),
+    "telco": ("bm_telco", "bench_telco", "time_func", 8, os.path.join(BENCHMARKS, 'bm_telco', 'data', 'telco-bench.b')),
     "thrift": (),  # pyston
     "tomli_loads": ("bm_tomli_loads", "bench_tomli_loads", "custom", 1),
     "typing_runtime_protocols": ("bm_typing_runtime_protocols", "bench_protocols", "time_func", 1024),
