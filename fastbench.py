@@ -1,3 +1,4 @@
+import inspect
 import io
 import re
 import os
@@ -474,7 +475,7 @@ async def wrap_async_func(func, loops):
     return dt
 
 
-def run_one_benchmark(name, scale):
+def run_one_benchmark(name, scale, decorate):
     info = ALL_BENCHMARKS[name]
     module_name, func_name, kind, loops, *extra = info
     if extra:
@@ -493,11 +494,11 @@ def run_one_benchmark(name, scale):
         loops = 1
 
     if kind == "custom":
-        func = globals()[func_name]
+        func = decorate(globals()[func_name])
         return func(loops, *args)
     elif kind == "func":
         mod = import_benchmark(module_name)
-        func = getattr(mod, func_name)
+        func = decorate(getattr(mod, func_name))
         start = time.perf_counter()
         for _ in range(loops):
             func(*args)
@@ -505,7 +506,7 @@ def run_one_benchmark(name, scale):
         return end - start
     elif kind == "time_func":
         mod = import_benchmark(module_name)
-        func = getattr(mod, func_name)
+        func = decorate(getattr(mod, func_name))
         return func(loops, *args)
     elif kind == "async":
         import asyncio
@@ -514,8 +515,32 @@ def run_one_benchmark(name, scale):
             func = getattr(mod, func_name)
         else:
             func = func_name()
+        func = decorate(func)
         dt = asyncio.run(wrap_async_func(func, loops))
         return dt
+
+
+def identity(func):
+    return func
+
+
+def record_stats(func):
+    if inspect.iscoroutinefunction(func):
+        async def record_stats_async(*args, **kwargs):
+            sys._stats_on()
+            try:
+                return await func(*args, **kwargs)
+            finally:
+                sys._stats_off()
+        return record_stats_async
+    else:
+        def record_stats_sync(*args, **kwargs):
+            sys._stats_on()
+            try:
+                return func(*args, **kwargs)
+            finally:
+                sys._stats_off()
+        return record_stats_sync
 
 
 def main(args):
@@ -529,6 +554,16 @@ def main(args):
             print(f"Unknown benchmark: {benchmark}", file=sys.stderr)
             sys.exit(1)
 
+    decorator = identity
+    if args.record_py_stats:
+        try:
+            sys._stats_clear()
+        except AttributeError as exc:
+            print(f"ERROR: {exc} -- did you forget to configure Python with --enable-pystats?",
+                  file=sys.stderr)
+            sys.exit(1)
+        decorator = record_stats
+
     print("Benchmark                     Time      Useful Work")
     results = {}
     for benchmark in benchmarks:
@@ -537,13 +572,17 @@ def main(args):
             continue
 
         start = time.perf_counter()
-        time_sec = run_one_benchmark(benchmark, args.scale)
+        time_sec = run_one_benchmark(benchmark, args.scale, decorator)
         true_time = time.perf_counter() - start
         pct = (time_sec / true_time) * 100
 
         results[benchmark] = time_sec * 1000
 
         print(f"{benchmark:<28} {time_sec * 1000:6.1f} ms      ({pct:3.0f}%)")
+
+    if args.record_py_stats:
+        sys._stats_dump()
+        sys._stats_clear()
 
     if not args.benchmarks:
         # Compute score
@@ -567,7 +606,7 @@ def main(args):
         with open(args.save_baselines, "w") as f:
             f.write("BASELINES = ")
             pprint.pprint(results, stream=f)
-    
+
     if args.json:
         import json
         with open(args.json, "w") as f:
@@ -583,6 +622,8 @@ if __name__ == "__main__":
                         help="work scale factor for the benchmark (default=100)")
     parser.add_argument("--json", type=str, default=None,
                         help="save results as JSON to the specified path")
+    parser.add_argument("--record-py-stats",  default=False, action="store_true",
+                        help="record py stats while benchmarks are running")
     parser.add_argument("--save-baselines", type=str, default=None,
                         help="save results as the baselines")
     parser.add_argument("benchmarks", nargs="*",
