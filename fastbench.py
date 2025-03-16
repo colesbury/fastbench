@@ -238,9 +238,9 @@ def bench_docutils(loops):
 
     start = time.perf_counter()
     for _ in range(loops):
-        for file_contents in file_contents:
+        for text in file_contents:
             with contextlib.suppress(docutils.ApplicationError):
-                core.publish_string(source=file_contents,
+                core.publish_string(source=text,
                                     reader_name="standalone",
                                     parser_name="restructuredtext",
                                     writer_name="html5",
