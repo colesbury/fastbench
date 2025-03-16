@@ -1,0 +1,37 @@
+[project]
+name = "fastbench"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+dependencies = [
+    "asgiref==3.3.4",
+    "certifi==2021.5.30",
+    "chameleon==3.9.1",
+    "coverage==7.3.2",
+    "django==3.2.4",
+    "docutils==0.18.1",
+    "dulwich==0.20.23",
+    "genshi==0.7.7",
+    "html5lib==1.1",
+    "legacy-cgi==2.6",
+    "mako==1.1.4",
+    "markupsafe==2.0.1",
+    "mpmath==1.2.1",
+    "networkx==3.4.2",
+    "pyaes==1.6.1",
+    "pyperf>=2.8.1",
+    "python-docs-theme==2024.6",
+    "pytz==2021.1",
+    "setuptools>=75.8.0",
+    "six==1.16.0",
+    "sphinx==7.3.7",
+    "sqlalchemy==1.3.20",
+    "sqlglot==4.6.0",
+    "sqlparse==0.4.1",
+    "sympy==1.13.1",
+    "tomli==2.0.1",
+    "tornado==6.2",
+    "urllib3==1.26.5",
+    "webencodings==0.5.1",
+    "websockets==11.0.3",
+]
