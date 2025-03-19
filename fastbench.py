@@ -398,7 +398,7 @@ ALL_BENCHMARKS = {
     "generators": ("bm_generators", "bench_generators", "time_func", 730),
     "genshi_text": ("bm_genshi", "bench_genshi", "time_func", 1000, genshi_text_args),
     "genshi_xml": ("bm_genshi", "bench_genshi", "time_func", 430, genshi_xml_args),
-    "go": ("bm_go", "versus_cpu", "func", 1),
+    "go": ("bm_go", "versus_cpu", "func", 145),
     "hexiom": ("bm_hexiom", "main", "time_func", 3500, (25,)),
     "html5lib": ("bm_html5lib", "bench_html5lib", "func", 340, html5lib_args),
     "json": ("bm_json", "?", "pyston", -1),  # pyston
